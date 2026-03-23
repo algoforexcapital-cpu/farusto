@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farusto AI | Trading Terminal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { overflow: hidden; }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 80px);
+            margin-top: 80px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
+        .chat-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+        .chat-header h2 {
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .chat-header h2::before {
+            content: '📈';
+            font-size: 1.8rem;
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-right: 10px;
+        }
+        .messages::-webkit-scrollbar { width: 6px; }
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.5;
+            animation: fadeUp 0.3s ease forwards;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 2px;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            color: white;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 4px 15px rgba(255, 0, 255, 0.2);
+        }
+        .chat-input {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+        .chat-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        .chat-input button {
+            background: var(--neon-cyan);
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .chat-input button:hover {
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .chat-container { padding: 10px; height: calc(100vh - 70px); margin-top: 70px; }
+            .message { max-width: 90%; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1" style="background: var(--neon-cyan);"></div>
+    <div class="blob blob-2" style="background: var(--neon-purple);"></div>
+
+    <header class="scrolled">
+        <div class="container nav-container" style="height: 70px;">
+            <a href="index.html" class="logo text-gradient">Farusto Trader</a>
+            <div class="nav-links" style="display: flex;">
+                <a href="services.html" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.8rem; border-radius: 20px;">Upgrade Plan</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <div class="glass-card" style="flex: 1; display: flex; flex-direction: column; padding: 20px;">
+            <div class="chat-header">
+                <h2>Farusto Financial AI</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Real-time market analysis & trade signals</p>
+            </div>
+            
+            <div class="messages" id="chat-box">
+                <div class="message bot">
+                    Hello! I am your Farusto Trading AI. How can I assist you with your portfolio or market analysis today?
+                </div>
+            </div>
+
+            <form class="chat-input" id="chat-form">
+                <input type="text" id="user-input" placeholder="Ask about stocks, crypto, or market trends..." required autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Logic Here Not Strictly Required Since We Assume Session Already Authenticated For This Demo, But Keep Scripts -->
+    <script src="script.js"></script>
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if(!text) return;
+
+            // Append User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = text;
+            chatBox.appendChild(userMsg);
+
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Bot Response Details
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.innerHTML = '<span style="color: #ff4444; font-weight: bold;">⚠️ Your limit exceeded</span><br><br>You have reached your free tier limit for market queries. Please upgrade your plan to continue receiving real-time predictive insights and trading signals.';
+                
+                const upgradeBtn = document.createElement('a');
+                upgradeBtn.href = "services.html";
+                upgradeBtn.className = "btn btn-primary";
+                upgradeBtn.style.cssText = "display: inline-block; margin-top: 15px; padding: 8px 20px; font-size: 0.85rem;";
+                upgradeBtn.textContent = "View Plans";
+                botMsg.appendChild(document.createElement('br'));
+                botMsg.appendChild(upgradeBtn);
+
+                chatBox.appendChild(botMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 800); // Slight delay to simulate thinking
+        });
+    </script>
+</body>
+</html>

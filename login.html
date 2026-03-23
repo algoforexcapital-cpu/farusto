@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | Farusto</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 50px;
+            position: relative;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+        }
+        .auth-switch a {
+            color: var(--neon-cyan);
+            font-weight: 600;
+        }
+        #login-error {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1" style="background: var(--neon-purple);"></div>
+    <div class="blob blob-2" style="background: var(--neon-pink);"></div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="logo text-gradient">Farusto</a>
+            <div class="mobile-menu-btn">☰</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="signup.html" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.9rem;">Sign Up</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <div class="glass-card auth-card reveal">
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p style="color: var(--text-muted);">Log in to your Farusto account</p>
+            </div>
+            
+            <div id="login-error"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between;">
+                        <label for="password">Password</label>
+                        <a href="#" style="font-size: 0.85rem; color: var(--text-muted);">Forgot Password?</a>
+                    </div>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" id="login-btn" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">Log In</button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a href="signup.html">Sign Up</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1hYMIUXPQvftT-5mV4C30oaSLcrLaMNs",
+            authDomain: "farusto-b1656.firebaseapp.com",
+            projectId: "farusto-b1656",
+            storageBucket: "farusto-b1656.firebasestorage.app",
+            messagingSenderId: "640310011650",
+            appId: "1:640310011650:web:2f55baf0af68fbfbb9841b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById('login-form');
+        const errorBox = document.getElementById('login-error');
+        const submitBtn = document.getElementById('login-btn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorBox.style.display = 'none';
+
+            // Configuration is valid
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            submitBtn.innerText = "Logging in...";
+            submitBtn.disabled = true;
+
+            try {
+                // Login User via Firebase Auth
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Redirect to chatbot
+                window.location.href = "chatbot.html";
+
+            } catch (error) {
+                console.error("Login Error:", error.message);
+                errorBox.innerText = "Invalid Email or Password!";
+                errorBox.style.display = 'block';
+                submitBtn.innerText = "Log In";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
